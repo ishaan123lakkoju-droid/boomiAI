@@ -1,0 +1,13 @@
+ComponentType,ComponentName,ComponentID,Reuse,Notes
+processproperty,PP_CustomerMaster,1234-5678,false,Process property pack for header values
+transform.function,CurDate_to_YYYYMMDD,2345-6789,false,Date conversion function
+profile.xml,[CGI] CustomerMaster XML,3456-7890,false,Target XML profile
+profile.db,[sftp]CUSTOMERMASTER DB,4567-8901,false,Source DB profile
+transform.map,Map_Template,5678-9012,false,Field mapping template
+connector-settings,CON_HUB_INT-test,6789-0123,false,WebSphere MQ connector
+connector-action,OP_CGI_CUSTOMER_SEND,7890-1234,false,MQ send operation
+connector-settings,AxwaySFTP,8901-2345,false,SFTP connector
+connector-action,sftp read operation,9012-3456,false,SFTP read operation
+process,[SUB]GET-AxwaySFTP,0123-4567,false,SFTP subprocess
+process,[SUB]Send_MQ,1234-5678,false,MQ subprocess
+process,SFTPTRANSJMS,2345-6789,false,Main orchestration process

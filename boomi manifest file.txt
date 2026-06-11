@@ -1,0 +1,195 @@
+# ─────────────────────────────────────────────
+
+# Boomi Pattern Manifest
+
+# SFTP → Transform → MQ Pattern
+
+# ─────────────────────────────────────────────
+
+ 
+
+# Pattern metadata
+
+pattern:
+
+  name: "SFTPTRANSJMS"                        # Main process name
+
+  description: "SFTP{Get}- Transformation - MQ{Send}"
+
+  folder_id: ""                               # Leave blank for root, or set folder ID
+
+ 
+
+# ─── SFTP Source ──────────────────────────────
+
+sftp:
+
+  reuse: false                                # true = reuse existing connector
+
+  existing_connector_id: "a93feb82-67ce-44a1-9788-f35d71651b2c"                  # Fill if reuse: true
+
+  connector_name: "AxwaySFTP"
+
+  host: "172.16.16.12demo"
+
+  port: 8022
+
+  username: "INT-RIH-BOOMI-GL-test"
+
+  auth_type: "Key_File_Path"                 # Key_File_Path or Password
+
+  key_path: "/mount/stanprsarihfile01/rihfileshare01/pac/Cloud_AZURE_CLUSTER_NONPROD/ssh_key/axway"
+
+  remote_directory: ""
+
+  read_file_name: "sample.txt"               # File to read in subprocess
+
+ 
+
+  operation_name: "sftp read operation"
+
+  action_after_read: "none"                  # none, move, delete
+
+ 
+
+# ─── Source Profile (DB) ──────────────────────
+
+source_profile:
+
+  name: "[sftp]CUSTOMERMASTER DB"
+
+  table_name: "win_gcif_all_info_table"
+
+  sql: >
+
+    SELECT address_5, booking_office, ccif_no, control_office,
+
+    core_info_control_office, crnt_profit_center1, crnt_profit_center2,
+
+    crnt_profit_center3, cust_full_name, cust_type, gcif_no,
+
+    mizuho_ccif_no, resident_type, swift_branch_code, lc_idf_gur_type,
+
+    local_language, profit_owner_mizuho_ccif_no,
+
+    gen_random_uuid() FROM win_gcif_all_info_table
+
+ 
+
+# ─── Target Profile (XML) ─────────────────────
+
+target_profile:
+
+  name: "[CGI] CustomerMaster XML"
+
+  root_element: "Proponix"
+
+ 
+
+# ─── Map ──────────────────────────────────────
+
+map:
+
+  name: "Map_Template"
+
+ 
+
+# ─── MQ Target ────────────────────────────────
+
+mq:
+
+  reuse: false                               # true = reuse existing connector
+
+  existing_connector_id: ""                 # Fill if reuse: true
+
+  connector_name: "CON_HUB_INT-test"
+
+  server_type: "WEBSPHERE_MQ_MULTI_INSTANCE"
+
+  host_list: "172.16.16.22(1414)"
+
+  queue_manager: "RIHQMINTSITHUB01-test"
+
+  channel: "BOOMI.SVRCONN.SIT1"
+
+  use_ssl: true
+
+  ssl_cipher: "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+
+ 
+
+  operation_name: "OP_CGI_CUSTOMER_SEND"
+
+  destination_queue: "queue://QL.RIHINT.OUT.TRADE.CGI.CMN1-test"
+
+  destination_type: "text_message"          # text_message, byte_message
+
+ 
+
+# ─── Process Properties ───────────────────────
+
+process_properties:
+
+  name: "PP_CustomerMaster"
+
+  values:
+
+    DestinationID: "PRO"
+
+    SenderID: "MIZ"
+
+    OperationOrganizationID: "BBPLCUK"
+
+    MessageType: "CUSTMER"
+
+    MessageID: ""
+
+    AdviceMethod: ""
+
+    CustomerType: ""
+
+    RebateIndicator: "Y"
+
+    InitialChange: "A"
+
+    CustomerEntryType: "BNK"
+
+    Attachment: "N"
+
+    Integration_Type: "Schedule"
+
+    Severity: "HIGH"
+
+    Payload: "Payload"
+
+    FileName: ""
+
+    AlertNotification: "Y"
+
+    EnvironmentName: "1_POC"
+
+    FromEmail: ""
+
+    ToEmail1: ""
+
+    Source_System: "CustomerMAsterDB"
+
+    Target_System: "CGI"
+
+ 
+
+# ─── Sub-process names ────────────────────────
+
+subprocesses:
+
+  sftp_subprocess_name: "[SUB]GET-AxwaySFTP"
+
+  mq_subprocess_name: "[SUB]Send_MQ"
+
+ 
+
+# ─── Map Function ─────────────────────────────
+
+map_function:
+
+  name: "CurDate_to_YYYYMMDD"

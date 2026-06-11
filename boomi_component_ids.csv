@@ -1,0 +1,13 @@
+ComponentType,ComponentName,ComponentID,Reuse,Notes
+processproperty,PP_CustomerMaster,dryrun-6404634,false,Process property group
+transform.function,CurDate_to_YYYYMMDD,dryrun-9828176,false,Re-usable map function
+profile.xml,[CGI] CustomerMaster XML,dryrun-6244336,false,Target XML schema
+profile.db,[sftp]CUSTOMERMASTER DB,dryrun-1579941,false,Database source schema
+transform.map,Map_Template,dryrun-7646700,false,Data mapping
+connector-settings,CON_HUB_INT-test,dryrun-8675537,false,MQ connector
+connector-action,OP_CGI_CUSTOMER_SEND,dryrun-7338299,false,MQ operation
+connector-settings,AxwaySFTP,dryrun-5644051,false,SFTP connector
+connector-action,sftp read operation,dryrun-1319353,false,SFTP operation
+process,[SUB]GET-AxwaySFTP,dryrun-590696,false,SFTP subprocess
+process,[SUB]Send_MQ,dryrun-3501867,false,MQ subprocess
+process,SFTPTRANSJMS,dryrun-1326654,false,Main orchestration process
